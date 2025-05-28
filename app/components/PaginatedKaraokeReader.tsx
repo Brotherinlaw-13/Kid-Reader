@@ -22,24 +22,16 @@ export default function PaginatedKaraokeReader({ story }: PaginatedKaraokeReader
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useEffect(() => {
-    // Create pages from story pages
-    const pagesArray: Page[] = [];
-    let pageNumber = 1;
-    
-    story.pages.forEach((storyPage) => {
-      // Split each story page text into words
+    // Create pages from story pages - each story page becomes one complete page
+    const pagesArray: Page[] = story.pages.map((storyPage, index) => {
+      // Split the story page text into words
       const allWords = storyPage.text.split(/(\s+)/).filter(word => word.trim().length > 0);
-      const { wordsPerPage } = readerConfig;
       
-      // Split into smaller pages if needed based on wordsPerPage
-      for (let i = 0; i < allWords.length; i += wordsPerPage) {
-        const pageWords = allWords.slice(i, i + wordsPerPage);
-        pagesArray.push({
-          words: pageWords,
-          pageNumber: pageNumber++,
-          storyPage: storyPage
-        });
-      }
+      return {
+        words: allWords,
+        pageNumber: index + 1,
+        storyPage: storyPage
+      };
     });
     
     setPages(pagesArray);
@@ -230,9 +222,9 @@ export default function PaginatedKaraokeReader({ story }: PaginatedKaraokeReader
     }
   };
 
-  // Update the Read Page button condition - show when page is completed
+  // Update the Read Page button condition - show when page is completed and we're on or after the configured page
   const shouldShowReadPageButton = () => {
-    return isCurrentPageCompleted();
+    return isCurrentPageCompleted() && currentPageIndex >= readerConfig.showReadPageButtonFromPage;
   };
 
   if (pages.length === 0) {

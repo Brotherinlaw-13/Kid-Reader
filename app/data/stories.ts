@@ -16,12 +16,10 @@ export interface Story {
 }
 
 export interface ReaderConfig {
-  wordsPerPage: number;
   showReadPageButtonFromPage: number; // 0 = first page, 1 = second page, etc.
 }
 
 export const readerConfig: ReaderConfig = {
-  wordsPerPage: 8,
   showReadPageButtonFromPage: 1 // Don't show on first page (index 0)
 };
 
