@@ -348,7 +348,7 @@ export default function PaginatedKaraokeReader({ story }: PaginatedKaraokeReader
               >
                 <span
                   className={`
-                    inline-block px-2 py-1 rounded transition-all duration-300 font-medium
+                    inline-block px-2 py-1 rounded transition-all duration-300 font-medium select-none
                     ${status === 'completed' 
                       ? 'bg-green-500 text-white shadow-lg cursor-pointer hover:bg-green-600' 
                       : status === 'active'
