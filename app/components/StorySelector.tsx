@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Story, stories, getDifficultyColor, getStoryPreview } from '../data/stories';
+import { Story, stories, getStoryPreview } from '../data/stories';
 import { ProgressTracker, ReadingProgress } from '../utils/progressTracker';
 
 interface StorySelectorProps {

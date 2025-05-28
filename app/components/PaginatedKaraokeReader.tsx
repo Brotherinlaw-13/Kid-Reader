@@ -265,53 +265,6 @@ export default function PaginatedKaraokeReader({ story }: PaginatedKaraokeReader
     }
   };
 
-  const goToPage = (pageIndex: number) => {
-    if (pageIndex >= 0 && pageIndex < pages.length) {
-      setCurrentPageIndex(pageIndex);
-      setCurrentActiveWord(0); // Reset to first word of new page
-    }
-  };
-
-  const resetProgress = () => {
-    if (confirm('Are you sure you want to reset your progress for this story?')) {
-      ProgressTracker.clearStoryProgress(story.id);
-      setCurrentPageIndex(0);
-      setCurrentActiveWord(0);
-      setCompletedPages(new Set());
-      setAllWordProgress({});
-      setWordProgress({});
-      
-      // Reinitialize first page
-      if (pages.length > 0) {
-        const initialProgress: { [key: number]: number } = {};
-        pages[0].words.forEach((_, index) => {
-          initialProgress[index] = 0;
-        });
-        setWordProgress(initialProgress);
-      }
-    }
-  };
-
-  const getOverallProgress = () => {
-    if (pages.length === 0) return 0;
-    
-    let totalWords = 0;
-    let completedWords = 0;
-    
-    pages.forEach((page, pageIndex) => {
-      totalWords += page.words.length;
-      const pageProgress = allWordProgress[pageIndex] || {};
-      
-      page.words.forEach((_, wordIndex) => {
-        if (pageProgress[wordIndex] === 100) {
-          completedWords++;
-        }
-      });
-    });
-    
-    return totalWords > 0 ? Math.round((completedWords / totalWords) * 100) : 0;
-  };
-
   const isCurrentPageCompleted = () => {
     const currentPage = pages[currentPageIndex];
     return currentPage && currentActiveWord >= currentPage.words.length;
