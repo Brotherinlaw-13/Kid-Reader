@@ -3,8 +3,8 @@
 import KaraokeReader from './components/KaraokeReader';
 
 export default function Home() {
-  // First paragraph from Harry Potter and the Philosopher's Stone
-  const harryPotterText = "Mr. and Mrs. Dursley of number four, Privet Drive, were proud to say that they were perfectly normal, thank you very much.";
+  // Simple magic phrase
+  const simpleText = "He waved a wand and magic happened.";
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8">
@@ -15,8 +15,8 @@ export default function Home() {
         
         <div className="max-w-6xl mx-auto">
           <KaraokeReader 
-            text={harryPotterText}
-            title="🧙‍♂️ Harry Potter - The Beginning"
+            text={simpleText}
+            title="✨ Magic Story"
           />
         </div>
       </div>
