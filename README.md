@@ -1,237 +1,173 @@
-# Kid Reader - Phoneme Learning App
+# 📚 Kid Reader - AI-Powered Children's Reading App
 
-A Next.js application that helps children learn phonemes by breaking down words into their component sounds. Click on letters to hear their phoneme sounds!
+A Next.js application that helps children learn to read with interactive stories, voice guidance, and beautiful AI-generated illustrations.
 
-## Features
+## ✨ Features
 
-- 🔤 **Grapheme-Phoneme Mapping**: Breaks words into letters (graphemes) and sounds (phonemes)
-- 🔊 **Audio Phonemes**: Uses real audio files for accurate phoneme pronunciation
-- 🗣️ **Speech Synthesis Fallback**: Falls back to browser speech synthesis when audio files aren't available
-- 📱 **PWA Support**: Works offline as a Progressive Web App
-- 🎯 **Educational**: Perfect for teaching phonics and reading skills
+- **Interactive Reading**: Word-by-word progress tracking with sliders
+- **Voice Guidance**: Text-to-speech for individual words and full pages
+- **Beautiful AI Images**: Professional children's book illustrations generated with DALL-E 3
+- **Progressive Web App**: Works offline and can be installed on devices
+- **Responsive Design**: Works on desktop, tablet, and mobile
 
-## Getting Started
+## 🎨 AI Image Generation
 
-### 1. Install Dependencies
+This app includes a professional AI image generation system that creates beautiful children's book illustrations:
 
-```bash
-npm install
-```
+### Supported Services
+- **OpenAI DALL-E 3** (Recommended) - Highest quality
+- **Replicate** (Midjourney-style) - Great artistic style
+- **Stability AI** - Good balance of quality/cost
+- **Leonardo.AI** - Excellent for illustrations
 
-### 2. Set Up Phoneme Audio Files (Recommended)
+### Quick Start
+1. Get an API key from OpenAI: https://platform.openai.com/api-keys
+2. Set environment variable: `export OPENAI_API_KEY="your-key-here"`
+3. Install dependencies: `pip install -r requirements.txt`
+4. Generate images: `python scripts/generate_ai_images.py`
 
-#### Option A: Generate with eSpeak-NG (Best Quality) 🌟
+## 🚀 Getting Started
 
-```bash
-npm run generate-phonemes
-```
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- Python 3.8+ (for AI image generation)
 
-This uses the open-source eSpeak-NG synthesizer to generate clean, high-quality phoneme audio files. 
+### Installation
 
-**Installation required:** See [ESPEAK_INSTALLATION.md](ESPEAK_INSTALLATION.md) for detailed setup instructions.
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd kid-reader
+   ```
 
-**Benefits:**
-- ✅ Perfect pronunciation accuracy
-- ✅ Consistent volume and quality
-- ✅ No background noise
-- ✅ Multiple English accents available
-- ✅ Generates all 39 phonemes in seconds
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-#### Option B: Create Placeholders for All English Phonemes
+3. **Install Python dependencies** (for AI images)
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-```bash
-npm run create-placeholders
-```
+4. **Start the development server**
+   ```bash
+   npm run dev
+   ```
 
-This creates placeholder files for all 39 English phonemes:
-- **24 Consonants**: b, ch, d, dh, f, g, h, j, k, l, m, n, ng, p, r, s, sh, t, th, v, w, y, z, zh
-- **12 Vowels**: ih, eh, ae, ah, ao, uh, iy, ey, aa, ow, uw, er  
-- **3 Diphthongs**: ay, aw, oy
+5. **Open your browser**
+   Navigate to `http://localhost:3000`
 
-#### Option C: Check Setup Status
+## 📖 Current Stories
 
-```bash
-npm run setup-phonemes
-```
+### Magic Story ✨
+A simple 3-page story about a young wizard and magic:
+- **Page 1**: "Once upon a time, there was a little wizard"
+- **Page 2**: "He waved his magic wand in the air"  
+- **Page 3**: "Suddenly, beautiful flowers appeared everywhere!"
 
-This will show you how to download and set up audio files from Freesound.org or other sources.
+Complete with professional AI-generated illustrations!
 
-### 3. Run the Development Server
+## 🛠️ Development
 
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Complete English Phoneme List
-
-### Consonants (24)
-- `b.wav` - B sound as in "bat"
-- `ch.wav` - CH sound as in "chip"  
-- `d.wav` - D sound as in "dog"
-- `dh.wav` - voiced TH sound as in "this"
-- `f.wav` - F sound as in "fish"
-- `g.wav` - G sound as in "go"
-- `h.wav` - H sound as in "house"
-- `j.wav` - J sound as in "jump" (JH in ARPAbet)
-- `k.wav` - K sound as in "cat"
-- `l.wav` - L sound as in "love"
-- `m.wav` - M sound as in "mom"
-- `n.wav` - N sound as in "no"
-- `ng.wav` - NG sound as in "sing"
-- `p.wav` - P sound as in "pop"
-- `r.wav` - R sound as in "red"
-- `s.wav` - S sound as in "see"
-- `sh.wav` - SH sound as in "ship"
-- `t.wav` - T sound as in "top"
-- `th.wav` - unvoiced TH sound as in "think"
-- `v.wav` - V sound as in "very"
-- `w.wav` - W sound as in "we"
-- `y.wav` - Y sound as in "yes"
-- `z.wav` - Z sound as in "zoo"
-- `zh.wav` - ZH sound as in "measure"
-
-### Vowels (12)
-- `ih.wav` - short I sound as in "bit"
-- `eh.wav` - short E sound as in "bet"
-- `ae.wav` - short A sound as in "cat"
-- `ah.wav` - schwa sound as in "but"
-- `ao.wav` - short O sound as in "caught"
-- `uh.wav` - short U sound as in "book"
-- `iy.wav` - long E sound as in "beat"
-- `ey.wav` - long A sound as in "bait"
-- `aa.wav` - long A sound as in "father"
-- `ow.wav` - long O sound as in "boat"
-- `uw.wav` - long U sound as in "boot"
-- `er.wav` - R-colored vowel as in "bird"
-
-### Diphthongs (3)
-- `ay.wav` - diphthong as in "buy"
-- `aw.wav` - diphthong as in "cow"
-- `oy.wav` - diphthong as in "boy"
-
-## How It Works
-
-### Phoneme Detection
-- Uses the `phonemify` library to convert words to ARPAbet phonemes
-- Maps graphemes (letters) to phonemes (sounds) with special handling for digraphs like "sh", "ch", "th"
-
-### Audio System
-- **🔊 Audio Files**: Plays real phoneme recordings when available
-- **🗣️ Speech Synthesis**: Falls back to browser text-to-speech
-- **Visual Indicators**: Shows which method is being used for each phoneme
-
-### Example: "ship"
-- **Graphemes**: s-h-i-p (4 letters)
-- **Phonemes**: SH-IH-P (3 sounds)
-- The "sh" makes one sound (SH), "i" makes the short "i" sound (IH), and "p" makes the P sound
-
-## Setting Up Audio Files
-
-### Option 1: Download from Freesound.org (Recommended)
-1. Visit: https://freesound.org/people/margo_heston/packs/12249/
-2. Create a free account
-3. Download the "English Phonemes" pack
-4. Extract .wav files to `public/audio/phonemes/`
-5. Rename files according to ARPAbet notation (sh.wav, ih.wav, p.wav, etc.)
-
-### Option 2: Record Your Own
-1. Use a microphone and audio recording software
-2. Record each phoneme sound clearly (0.5-2 seconds each)
-3. Save as .wav files in `public/audio/phonemes/`
-4. Use the naming convention: sh.wav, ih.wav, p.wav, etc.
-
-### Option 3: Other Sources
-- American IPA Chart: https://americanipachart.com/
-- Read Naturally: https://readnaturally.com/phonics-sounds
-- Various educational websites with phoneme audio
-
-## File Structure
-
-```
-public/
-  audio/
-    phonemes/          # Phoneme audio files go here
-      sh.wav           # SH sound (as in "ship")
-      ih.wav           # IH sound (as in "bit")
-      p.wav            # P sound
-      ...
-app/
-  components/
-    AudioPhonemeReader.tsx    # Main component with audio support
-    PhonemeReader.tsx         # Speech synthesis version
-    SimplePhonemeDemo.tsx     # Simple demo for "ship"
-scripts/
-  setup-phonemes.js          # Helper script for audio setup
-```
-
-## Scripts
+### Available Scripts
 
 - `npm run dev` - Start development server
+- `npm run dev:turbo` - Start with Turbopack (faster, but may have issues)
 - `npm run build` - Build for production
 - `npm run start` - Start production server
-- `npm run generate-phonemes` - Generate phoneme audio files using eSpeak-NG
-- `npm run create-placeholders` - Create placeholder files for all English phonemes
-- `npm run setup-phonemes` - Check and set up phoneme audio files
+- `npm run lint` - Run ESLint
 
-### eSpeak-NG Phoneme Generation
+### Project Structure
 
-```bash
-npm run generate-phonemes                    # Generate with en-us voice
-npm run generate-phonemes --voice=en-gb      # Generate with British voice
-npm run generate-phonemes --voice=en-au      # Generate with Australian voice
-npm run generate-phonemes --force            # Overwrite existing files
-npm run generate-phonemes --voices           # List available voices
-npm run generate-phonemes --mapping          # Show ARPAbet to IPA mapping
+```
+kid-reader/
+├── app/                          # Next.js app directory
+│   ├── components/              # React components
+│   │   ├── PaginatedKaraokeReader.tsx
+│   │   └── StorySelector.tsx
+│   ├── data/                    # Story data
+│   │   └── stories.ts
+│   └── page.tsx                 # Main page
+├── public/                      # Static assets
+│   └── images/                  # Story images
+│       └── stories/
+│           └── magic-wand/      # Magic story images
+├── scripts/                     # Utility scripts
+│   └── generate_ai_images.py    # AI image generation
+├── requirements.txt             # Python dependencies
+└── AI_IMAGE_GENERATION_GUIDE.md # Detailed image guide
 ```
 
-### Placeholder Script Options
+## 🎯 How It Works
 
-```bash
-npm run create-placeholders          # Create placeholders for missing phonemes
-npm run create-placeholders --list   # List all 39 English phonemes by type
-npm run create-placeholders --status # Show current status of audio files
-npm run create-placeholders --help   # Show help message
-```
+### Reading Experience
+1. **Story Selection**: Choose from available stories
+2. **Page Navigation**: Navigate through story pages
+3. **Word Interaction**: Click completed words to hear pronunciation
+4. **Progress Tracking**: Use sliders to mark word completion
+5. **Page Reading**: Listen to full page narration
 
-## Technologies Used
+### Image System
+- **Automatic Loading**: Images load automatically when available
+- **Fallback System**: Shows emoji placeholders if images fail
+- **Responsive Design**: Images scale properly on all devices
+- **Professional Quality**: AI-generated illustrations optimized for children
 
-- **Next.js 15** - React framework with App Router
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
-- **PWA** - Progressive Web App capabilities
-- **phonemify** - Text-to-phoneme conversion
-- **Web Audio API** - Audio playback
-- **Speech Synthesis API** - Fallback pronunciation
+## 🔧 Configuration
 
-## Educational Use
+### Reader Settings
+Configure reading behavior in `app/data/stories.ts`:
+- `wordsPerPage`: Number of words per reading page
+- `showReadPageButtonFromPage`: When to show the "Read Page" button
 
-This app is designed for:
-- Teaching phonics to children
-- Helping with reading comprehension
-- Supporting language learning
-- Demonstrating grapheme-phoneme relationships
+### Image Generation
+Customize prompts and settings in `scripts/generate_ai_images.py`
 
-## Contributing
+## 📱 PWA Features
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+- **Offline Support**: Works without internet connection
+- **Installable**: Can be installed as an app on devices
+- **Service Worker**: Caches resources for offline use
 
-## License
+## 🎨 Adding New Stories
+
+1. **Add story data** to `app/data/stories.ts`
+2. **Create image directory** in `public/images/stories/[story-id]/`
+3. **Generate images** using the AI script or manually
+4. **Test the story** in the app
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Turbopack Runtime Error**
+- Use `npm run dev` instead of `npm run dev:turbo`
+- Clear cache: `Remove-Item -Recurse -Force .next`
+
+**Images Not Loading**
+- Check file names match exactly
+- Verify images are in correct directory
+- Ensure proper file format (JPG/PNG)
+
+**AI Generation Issues**
+- Verify API key is set correctly
+- Check internet connection
+- Review error messages in console
+
+## 📄 License
 
 This project is open source and available under the MIT License.
 
-## Learn More
+## 🤝 Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📞 Support
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+For questions or issues, please check the troubleshooting section or create an issue in the repository.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Made with ❤️ for young readers everywhere!** 📚✨

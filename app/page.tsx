@@ -35,8 +35,7 @@ export default function Home() {
             </button>
             
             <PaginatedKaraokeReader 
-              text={selectedStory.text}
-              title={selectedStory.title}
+              story={selectedStory}
             />
           </div>
         ) : (

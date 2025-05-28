@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Story, getAllCategories, getStoriesByCategory, getDifficultyColor } from '../data/stories';
+import { Story, getAllCategories, getStoriesByCategory, getDifficultyColor, getStoryPreview } from '../data/stories';
 
 interface StorySelectorProps {
   onStorySelect: (story: Story) => void;
@@ -47,12 +47,34 @@ export default function StorySelector({ onStorySelect }: StorySelectorProps) {
           <div
             key={story.id}
             onClick={() => onStorySelect(story)}
-            className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 border border-gray-100"
+            className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 border border-gray-100 overflow-hidden"
           >
+            {/* Cover Image */}
+            {story.coverImage && (
+              <div className="h-48 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                <img 
+                  src={story.coverImage} 
+                  alt={`Cover for ${story.title}`}
+                  className="w-full h-full object-cover rounded-t-xl"
+                  onError={(e) => {
+                    // Fallback to emoji placeholder if image fails to load
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const fallback = target.nextElementSibling as HTMLElement;
+                    if (fallback) fallback.style.display = 'flex';
+                  }}
+                />
+                {/* Fallback emoji placeholder */}
+                <div className="text-6xl" style={{ display: 'none' }}>{story.emoji}</div>
+              </div>
+            )}
+            
             <div className="p-6">
               {/* Story Emoji and Title */}
               <div className="text-center mb-4">
-                <div className="text-4xl mb-2">{story.emoji}</div>
+                {!story.coverImage && (
+                  <div className="text-4xl mb-2">{story.emoji}</div>
+                )}
                 <h3 className="text-xl font-bold text-gray-800 mb-2">
                   {story.title}
                 </h3>
@@ -64,10 +86,10 @@ export default function StorySelector({ onStorySelect }: StorySelectorProps) {
               {/* Story Preview */}
               <div className="bg-gray-50 rounded-lg p-3 mb-4">
                 <p className="text-sm text-gray-700 line-clamp-3">
-                  {story.text.length > 80 
-                    ? `${story.text.substring(0, 80)}...` 
-                    : story.text
-                  }
+                  {getStoryPreview(story, 80)}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {story.pages.length} page{story.pages.length !== 1 ? 's' : ''}
                 </p>
               </div>
 

@@ -1,0 +1,19 @@
+Magic Story - Image Generation Prompts
+========================================
+
+COVER: cover.jpg
+Prompt: Children's book cover illustration of a young wizard with a pointed hat holding a magic wand, whimsical and colorful style, suitable for kids aged 4-8, bright colors, fantasy theme
+----------------------------------------
+
+PAGE1: page1.jpg
+Prompt: Children's book illustration of a little wizard with a pointed hat, friendly and cute character, sitting or standing in a magical setting, bright colors, simple style for young children
+----------------------------------------
+
+PAGE2: page2.jpg
+Prompt: Children's book illustration of a young wizard waving a sparkling magic wand in the air, magical sparkles and stars coming from the wand, bright and colorful, whimsical style
+----------------------------------------
+
+PAGE3: page3.jpg
+Prompt: Children's book illustration of beautiful colorful flowers blooming everywhere around a little wizard, magical garden scene, bright flowers in many colors, cheerful and magical atmosphere
+----------------------------------------
+

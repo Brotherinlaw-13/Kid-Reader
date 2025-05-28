@@ -1,19 +1,19 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { readerConfig } from '../data/stories';
+import { readerConfig, Story, StoryPage } from '../data/stories';
 
 interface PaginatedKaraokeReaderProps {
-  text: string;
-  title?: string;
+  story: Story;
 }
 
 interface Page {
   words: string[];
   pageNumber: number;
+  storyPage: StoryPage; // Reference to the original story page
 }
 
-export default function PaginatedKaraokeReader({ text, title = "Reading Practice" }: PaginatedKaraokeReaderProps) {
+export default function PaginatedKaraokeReader({ story }: PaginatedKaraokeReaderProps) {
   const [pages, setPages] = useState<Page[]>([]);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [wordProgress, setWordProgress] = useState<{ [key: number]: number }>({});
@@ -22,20 +22,25 @@ export default function PaginatedKaraokeReader({ text, title = "Reading Practice
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useEffect(() => {
-    // Split text into words, preserving punctuation
-    const allWords = text.split(/(\s+)/).filter(word => word.trim().length > 0);
-    
-    // Create pages using configuration
+    // Create pages from story pages
     const pagesArray: Page[] = [];
-    const { wordsPerPage } = readerConfig;
+    let pageNumber = 1;
     
-    for (let i = 0; i < allWords.length; i += wordsPerPage) {
-      const pageWords = allWords.slice(i, i + wordsPerPage);
-      pagesArray.push({
-        words: pageWords,
-        pageNumber: Math.floor(i / wordsPerPage) + 1
-      });
-    }
+    story.pages.forEach((storyPage) => {
+      // Split each story page text into words
+      const allWords = storyPage.text.split(/(\s+)/).filter(word => word.trim().length > 0);
+      const { wordsPerPage } = readerConfig;
+      
+      // Split into smaller pages if needed based on wordsPerPage
+      for (let i = 0; i < allWords.length; i += wordsPerPage) {
+        const pageWords = allWords.slice(i, i + wordsPerPage);
+        pagesArray.push({
+          words: pageWords,
+          pageNumber: pageNumber++,
+          storyPage: storyPage
+        });
+      }
+    });
     
     setPages(pagesArray);
     
@@ -48,7 +53,7 @@ export default function PaginatedKaraokeReader({ text, title = "Reading Practice
       setWordProgress(initialProgress);
       wordRefs.current = new Array(pagesArray[0].words.length);
     }
-  }, [text]);
+  }, [story]);
 
   useEffect(() => {
     // Reset word progress and refs when page changes
@@ -241,7 +246,7 @@ export default function PaginatedKaraokeReader({ text, title = "Reading Practice
       {/* Title and Page Info */}
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          {title}
+          {story.title}
         </h2>
         <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
           <span>Page {currentPage.pageNumber} of {pages.length}</span>
@@ -263,6 +268,33 @@ export default function PaginatedKaraokeReader({ text, title = "Reading Practice
           </div>
         </div>
       </div>
+      
+      {/* Story Page Image */}
+      {currentPage.storyPage.image && (
+        <div className="text-center mb-6">
+          <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg p-4 flex items-center justify-center min-h-[200px]">
+            <img 
+              src={currentPage.storyPage.image} 
+              alt={currentPage.storyPage.imageAlt || 'Story illustration'}
+              className="max-w-full max-h-64 object-contain rounded-lg shadow-md"
+              onError={(e) => {
+                // Fallback to emoji placeholder if image fails to load
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const fallback = target.nextElementSibling as HTMLElement;
+                if (fallback) fallback.style.display = 'block';
+              }}
+            />
+            {/* Fallback emoji placeholder */}
+            <div className="text-center" style={{ display: 'none' }}>
+              <div className="text-8xl mb-4">{story.emoji}</div>
+              <p className="text-gray-600 text-sm italic">
+                {currentPage.storyPage.imageAlt || 'Story illustration'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Text Display with sequential word sliders */}
       <div className="text-center leading-relaxed mb-8">
