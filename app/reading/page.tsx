@@ -1,7 +1,7 @@
 'use client';
 
 export default function ReadingPage() {
-  const text = "Harry waved his wand. Sparks flew.";
+  const text = "Harry waved his wand. Sparks flew. It was amazing!";
   
   return (
     <main className="p-6 text-3xl leading-relaxed select-none">
