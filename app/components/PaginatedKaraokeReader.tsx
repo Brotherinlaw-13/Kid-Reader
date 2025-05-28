@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { readerConfig, Story, StoryPage } from '../data/stories';
+import { ProgressTracker, ReadingProgress } from '../utils/progressTracker';
 
 interface PaginatedKaraokeReaderProps {
   story: Story;
@@ -19,7 +20,47 @@ export default function PaginatedKaraokeReader({ story }: PaginatedKaraokeReader
   const [wordProgress, setWordProgress] = useState<{ [key: number]: number }>({});
   const [currentActiveWord, setCurrentActiveWord] = useState(0);
   const [completedPages, setCompletedPages] = useState<Set<number>>(new Set());
+  const [allWordProgress, setAllWordProgress] = useState<{ [pageIndex: number]: { [wordIndex: number]: number } }>({});
+  const [isClient, setIsClient] = useState(false);
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
+
+  // Ensure we're on the client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Load progress when component mounts
+  const loadProgress = useCallback(() => {
+    if (!isClient || !ProgressTracker.isAvailable()) return;
+
+    const savedProgress = ProgressTracker.getProgress(story.id);
+    if (savedProgress) {
+      setCurrentPageIndex(savedProgress.currentPageIndex);
+      setCurrentActiveWord(savedProgress.currentWordIndex);
+      setCompletedPages(new Set(savedProgress.completedPages));
+      setAllWordProgress(savedProgress.wordProgress);
+      
+      // Set word progress for the current page
+      const currentPageProgress = savedProgress.wordProgress[savedProgress.currentPageIndex] || {};
+      setWordProgress(currentPageProgress);
+    }
+  }, [isClient, story.id]);
+
+  // Save progress whenever important state changes
+  const saveProgress = useCallback(() => {
+    if (!isClient || !ProgressTracker.isAvailable()) return;
+
+    const progress: ReadingProgress = {
+      storyId: story.id,
+      currentPageIndex,
+      currentWordIndex: currentActiveWord,
+      completedPages: Array.from(completedPages),
+      wordProgress: allWordProgress,
+      lastReadAt: new Date().toISOString()
+    };
+
+    ProgressTracker.saveProgress(progress);
+  }, [isClient, story.id, currentPageIndex, currentActiveWord, completedPages, allWordProgress]);
 
   useEffect(() => {
     // Create pages from story pages - each story page becomes one complete page
@@ -47,19 +88,36 @@ export default function PaginatedKaraokeReader({ story }: PaginatedKaraokeReader
     }
   }, [story]);
 
+  // Load saved progress after client is ready and pages are set
+  useEffect(() => {
+    if (isClient && pages.length > 0) {
+      loadProgress();
+    }
+  }, [isClient, pages.length, loadProgress]);
+
   useEffect(() => {
     // Reset word progress and refs when page changes
     if (pages.length > 0 && pages[currentPageIndex]) {
       const currentPage = pages[currentPageIndex];
+      
+      // Load saved progress for this page or initialize
+      const savedPageProgress = allWordProgress[currentPageIndex] || {};
       const initialProgress: { [key: number]: number } = {};
       currentPage.words.forEach((_, index) => {
-        initialProgress[index] = 0;
+        initialProgress[index] = savedPageProgress[index] || 0;
       });
+      
       setWordProgress(initialProgress);
-      setCurrentActiveWord(0);
       wordRefs.current = new Array(currentPage.words.length);
     }
-  }, [currentPageIndex, pages]);
+  }, [currentPageIndex, pages, allWordProgress]);
+
+  // Save progress when important state changes
+  useEffect(() => {
+    if (isClient && pages.length > 0) {
+      saveProgress();
+    }
+  }, [isClient, pages.length, saveProgress]);
 
   useEffect(() => {
     // Ensure speech synthesis voices are loaded
@@ -80,9 +138,19 @@ export default function PaginatedKaraokeReader({ story }: PaginatedKaraokeReader
   const handleWordSliderChange = (wordIndex: number, event: React.ChangeEvent<HTMLInputElement>) => {
     const progress = parseInt(event.target.value);
     
+    // Update current page word progress
     setWordProgress(prev => ({
       ...prev,
       [wordIndex]: progress
+    }));
+
+    // Update all word progress
+    setAllWordProgress(prev => ({
+      ...prev,
+      [currentPageIndex]: {
+        ...prev[currentPageIndex],
+        [wordIndex]: progress
+      }
     }));
 
     const currentPage = pages[currentPageIndex];
@@ -186,19 +254,62 @@ export default function PaginatedKaraokeReader({ story }: PaginatedKaraokeReader
   const nextPage = () => {
     if (currentPageIndex < pages.length - 1) {
       setCurrentPageIndex(currentPageIndex + 1);
+      setCurrentActiveWord(0); // Reset to first word of new page
     }
   };
 
   const prevPage = () => {
     if (currentPageIndex > 0) {
       setCurrentPageIndex(currentPageIndex - 1);
+      setCurrentActiveWord(0); // Reset to first word of new page
     }
   };
 
   const goToPage = (pageIndex: number) => {
     if (pageIndex >= 0 && pageIndex < pages.length) {
       setCurrentPageIndex(pageIndex);
+      setCurrentActiveWord(0); // Reset to first word of new page
     }
+  };
+
+  const resetProgress = () => {
+    if (confirm('Are you sure you want to reset your progress for this story?')) {
+      ProgressTracker.clearStoryProgress(story.id);
+      setCurrentPageIndex(0);
+      setCurrentActiveWord(0);
+      setCompletedPages(new Set());
+      setAllWordProgress({});
+      setWordProgress({});
+      
+      // Reinitialize first page
+      if (pages.length > 0) {
+        const initialProgress: { [key: number]: number } = {};
+        pages[0].words.forEach((_, index) => {
+          initialProgress[index] = 0;
+        });
+        setWordProgress(initialProgress);
+      }
+    }
+  };
+
+  const getOverallProgress = () => {
+    if (pages.length === 0) return 0;
+    
+    let totalWords = 0;
+    let completedWords = 0;
+    
+    pages.forEach((page, pageIndex) => {
+      totalWords += page.words.length;
+      const pageProgress = allWordProgress[pageIndex] || {};
+      
+      page.words.forEach((_, wordIndex) => {
+        if (pageProgress[wordIndex] === 100) {
+          completedWords++;
+        }
+      });
+    });
+    
+    return totalWords > 0 ? Math.round((completedWords / totalWords) * 100) : 0;
   };
 
   const isCurrentPageCompleted = () => {
@@ -235,50 +346,31 @@ export default function PaginatedKaraokeReader({ story }: PaginatedKaraokeReader
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      {/* Title and Page Info */}
+      {/* Title */}
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">
           {story.title}
         </h2>
-        <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
-          <span>Page {currentPage.pageNumber} of {pages.length}</span>
-          <div className="flex gap-1">
-            {pages.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToPage(index)}
-                className={`w-3 h-3 rounded-full transition-all ${
-                  index === currentPageIndex
-                    ? 'bg-blue-500'
-                    : completedPages.has(index)
-                    ? 'bg-green-500'
-                    : 'bg-gray-300'
-                }`}
-                title={`Go to page ${index + 1}`}
-              />
-            ))}
-          </div>
-        </div>
       </div>
       
       {/* Story Page Image */}
       {currentPage.storyPage.image && (
         <div className="text-center mb-6">
-          <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg p-4 flex items-center justify-center min-h-[200px]">
-            <img 
-              src={currentPage.storyPage.image} 
-              alt={currentPage.storyPage.imageAlt || 'Story illustration'}
-              className="max-w-full max-h-64 object-contain rounded-lg shadow-md"
-              onError={(e) => {
-                // Fallback to emoji placeholder if image fails to load
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                const fallback = target.nextElementSibling as HTMLElement;
-                if (fallback) fallback.style.display = 'block';
-              }}
-            />
-            {/* Fallback emoji placeholder */}
-            <div className="text-center" style={{ display: 'none' }}>
+          <img 
+            src={currentPage.storyPage.image} 
+            alt={currentPage.storyPage.imageAlt || 'Story illustration'}
+            className="max-w-full max-h-64 object-contain rounded-lg shadow-md mx-auto"
+            onError={(e) => {
+              // Fallback to emoji placeholder if image fails to load
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              const fallback = target.nextElementSibling as HTMLElement;
+              if (fallback) fallback.style.display = 'flex';
+            }}
+          />
+          {/* Fallback emoji placeholder */}
+          <div className="min-h-[200px] bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg p-4 flex items-center justify-center" style={{ display: 'none' }}>
+            <div className="text-center">
               <div className="text-8xl mb-4">{story.emoji}</div>
               <p className="text-gray-600 text-sm italic">
                 {currentPage.storyPage.imageAlt || 'Story illustration'}
@@ -290,7 +382,7 @@ export default function PaginatedKaraokeReader({ story }: PaginatedKaraokeReader
       
       {/* Text Display with sequential word sliders */}
       <div className="text-center leading-relaxed mb-8">
-        <div className="text-xl md:text-2xl lg:text-3xl pb-16 min-h-[120px] flex flex-wrap justify-center items-start gap-2 relative">
+        <div className="text-xl md:text-2xl lg:text-3xl pb-16 min-h-[120px] flex flex-wrap justify-center items-center gap-1 relative max-w-4xl mx-auto">
           {currentPage.words.map((word, index) => {
             const progress = wordProgress[index] || 0;
             const status = getWordStatus(index);
@@ -303,7 +395,7 @@ export default function PaginatedKaraokeReader({ story }: PaginatedKaraokeReader
               >
                 <span
                   className={`
-                    inline-block px-3 py-2 rounded transition-all duration-300 font-medium
+                    inline-block px-2 py-1 rounded transition-all duration-300 font-medium
                     ${status === 'completed' 
                       ? 'bg-green-500 text-white shadow-lg cursor-pointer hover:bg-green-600' 
                       : status === 'active'

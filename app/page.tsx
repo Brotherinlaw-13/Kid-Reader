@@ -1,12 +1,16 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PaginatedKaraokeReader from './components/PaginatedKaraokeReader';
 import StorySelector from './components/StorySelector';
+import ReadingProgress from './components/ReadingProgress';
 import { Story } from './data/stories';
+
+type TabType = 'stories' | 'progress';
 
 export default function Home() {
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
+  const [activeTab, setActiveTab] = useState<TabType>('stories');
 
   const handleStorySelect = (story: Story) => {
     setSelectedStory(story);
@@ -15,6 +19,18 @@ export default function Home() {
   const handleBackToSelector = () => {
     setSelectedStory(null);
   };
+
+  // Listen for custom event to switch to stories tab
+  useEffect(() => {
+    const handleSwitchToStories = () => {
+      setActiveTab('stories');
+    };
+
+    window.addEventListener('switchToStories', handleSwitchToStories);
+    return () => {
+      window.removeEventListener('switchToStories', handleSwitchToStories);
+    };
+  }, []);
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8">
@@ -39,7 +55,40 @@ export default function Home() {
             />
           </div>
         ) : (
-          <StorySelector onStorySelect={handleStorySelect} />
+          <div className="max-w-6xl mx-auto">
+            {/* Tab Navigation */}
+            <div className="flex justify-center mb-8">
+              <div className="bg-white rounded-lg shadow-md p-1 flex">
+                <button
+                  onClick={() => setActiveTab('stories')}
+                  className={`px-6 py-3 rounded-md font-medium transition-all ${
+                    activeTab === 'stories'
+                      ? 'bg-blue-500 text-white shadow-md'
+                      : 'text-gray-600 hover:text-blue-500 hover:bg-blue-50'
+                  }`}
+                >
+                  📚 Stories
+                </button>
+                <button
+                  onClick={() => setActiveTab('progress')}
+                  className={`px-6 py-3 rounded-md font-medium transition-all ${
+                    activeTab === 'progress'
+                      ? 'bg-blue-500 text-white shadow-md'
+                      : 'text-gray-600 hover:text-blue-500 hover:bg-blue-50'
+                  }`}
+                >
+                  📊 Reading Progress
+                </button>
+              </div>
+            </div>
+
+            {/* Tab Content */}
+            {activeTab === 'stories' ? (
+              <StorySelector onStorySelect={handleStorySelect} />
+            ) : (
+              <ReadingProgress onStorySelect={handleStorySelect} />
+            )}
+          </div>
         )}
       </div>
     </main>
