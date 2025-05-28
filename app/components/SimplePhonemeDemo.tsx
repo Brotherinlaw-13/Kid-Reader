@@ -79,7 +79,7 @@ export default function SimplePhonemeDemo() {
   
   return (
     <div className="p-6 bg-white border rounded-lg shadow-sm">
-      <h2 className="text-xl font-bold mb-4">Simple Phoneme Demo: "{word}"</h2>
+      <h2 className="text-xl font-bold mb-4">Simple Phoneme Demo: &quot;{word}&quot;</h2>
       
       <div className="mb-4">
         <p className="text-gray-600 mb-2">Raw phonemes: <code className="bg-gray-100 px-2 py-1 rounded">{phonemes.join(' ')}</code></p>
@@ -106,7 +106,7 @@ export default function SimplePhonemeDemo() {
       
       <p className="text-sm text-gray-500 mt-4">
         Click each grapheme-phoneme pair to hear the sound. 
-        "sh" makes the /SH/ sound, "i" makes the /IH/ sound, and "p" makes the /P/ sound.
+        &quot;sh&quot; makes the /SH/ sound, &quot;i&quot; makes the /IH/ sound, and &quot;p&quot; makes the /P/ sound.
       </p>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Story, stories, getAllCategories, getStoriesByCategory, getDifficultyColor } from '../data/stories';
+import { Story, getAllCategories, getStoriesByCategory, getDifficultyColor } from '../data/stories';
 
 interface StorySelectorProps {
   onStorySelect: (story: Story) => void;

@@ -46,7 +46,6 @@ const BASIC_WORD_PHONEMES: { [key: string]: string[] } = {
   'day': ['d', 'ay'],
   'way': ['w', 'ay'],
   'say': ['s', 'ay'],
-  'play': ['p', 'l', 'ay'],
   'stay': ['st', 'ay'],
   'night': ['n', 'igh', 't'],
   'light': ['l', 'igh', 't'],
@@ -89,28 +88,6 @@ export async function getWordPhonemesFromCMU(word: string): Promise<PhonemeSegme
       display: phoneme,
       position: index
     }));
-  }
-  
-  // Try to load CMU dictionary if available
-  try {
-    const { dictionary } = await import('cmu-pronouncing-dictionary');
-    
-    let pronunciation = dictionary[cleanWord] || 
-                       dictionary[cleanWord.toUpperCase()] ||
-                       dictionary[cleanWord.charAt(0).toUpperCase() + cleanWord.slice(1)];
-    
-    if (pronunciation) {
-      const arpabetPhonemes = pronunciation.split(' ').filter(p => p.trim() !== '');
-      
-      // Convert ARPAbet to simple display format
-      return arpabetPhonemes.map((phoneme, index) => ({
-        phoneme: phoneme,
-        display: phoneme.replace(/[0-9]/g, '').toLowerCase(), // Remove stress markers
-        position: index
-      }));
-    }
-  } catch (error) {
-    console.warn(`CMU dictionary not available for "${cleanWord}", using fallback`);
   }
   
   // Fallback: letter-by-letter conversion
