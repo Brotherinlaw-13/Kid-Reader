@@ -381,8 +381,8 @@ export default function PaginatedKaraokeReader({ story }: PaginatedKaraokeReader
       )}
       
       {/* Text Display with sequential word sliders */}
-      <div className="text-center leading-relaxed mb-8">
-        <div className="text-xl md:text-2xl lg:text-3xl pb-16 min-h-[120px] flex flex-wrap justify-center items-center gap-1 relative max-w-4xl mx-auto">
+      <div className="text-center leading-relaxed mb-2">
+        <div className="text-xl md:text-2xl lg:text-3xl pb-4 min-h-[120px] flex flex-wrap justify-center items-center gap-1 relative max-w-4xl mx-auto">
           {currentPage.words.map((word, index) => {
             const progress = wordProgress[index] || 0;
             const status = getWordStatus(index);
@@ -434,7 +434,7 @@ export default function PaginatedKaraokeReader({ story }: PaginatedKaraokeReader
         
         {/* Read Page button - centered below text */}
         {shouldShowReadPageButton() && (
-          <div className="text-center mb-6">
+          <div className="text-center mb-2">
             <button
               onClick={handlePlayCurrentPage}
               className="px-6 py-3 bg-pink-500 text-white rounded-lg font-medium hover:bg-pink-600 transition-all shadow-md hover:shadow-lg"

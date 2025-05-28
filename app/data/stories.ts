@@ -20,13 +20,13 @@ export interface ReaderConfig {
 }
 
 export const readerConfig: ReaderConfig = {
-  showReadPageButtonFromPage: 1 // Don't show on first page (index 0)
+  showReadPageButtonFromPage: 0 // Show on all pages including first page (index 0)
 };
 
 export const stories: Story[] = [
   {
     id: 'harry-potter-philosophers-stone',
-    title: '⚡ Harry Potter: The Boy Who Lived',
+    title: '⚡ Harry Potter: The Philosopher\'s Stone',
     description: 'A short, easy story of Harry\'s first year',
     pages: [
       { 

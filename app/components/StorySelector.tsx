@@ -135,32 +135,6 @@ export default function StorySelector({ onStorySelect }: StorySelectorProps) {
                   </div>
                 </div>
               )}
-
-              {/* Difficulty and Category */}
-              <div className="flex justify-between items-center mb-4">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(story.difficulty)}`}>
-                  {story.difficulty}
-                </span>
-                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                  {story.category}
-                </span>
-              </div>
-
-              {/* Read Button */}
-              <button className={`w-full py-2 px-4 rounded-lg font-medium transition-all ${
-                isCompleted(story)
-                  ? 'bg-green-500 hover:bg-green-600 text-white'
-                  : hasProgress(story)
-                  ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white'
-                  : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white'
-              }`}>
-                {isCompleted(story) 
-                  ? '✅ Read Again' 
-                  : hasProgress(story) 
-                  ? '📖 Continue Reading' 
-                  : '🚀 Start Reading'
-                }
-              </button>
             </div>
           </div>
         ))}
