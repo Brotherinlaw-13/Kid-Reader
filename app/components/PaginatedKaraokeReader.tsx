@@ -267,7 +267,11 @@ export default function PaginatedKaraokeReader({ story }: PaginatedKaraokeReader
 
   const isCurrentPageCompleted = () => {
     const currentPage = pages[currentPageIndex];
-    return currentPage && currentActiveWord >= currentPage.words.length;
+    if (!currentPage) return false;
+    
+    // Check if all words on this page are completed (100% progress)
+    const pageProgress = allWordProgress[currentPageIndex] || {};
+    return currentPage.words.every((_, wordIndex) => pageProgress[wordIndex] === 100);
   };
 
   const shouldShowSlider = (wordIndex: number) => {
