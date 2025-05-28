@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { stories, Story } from '../data/stories';
-import { ProgressTracker, ReadingProgress } from '../utils/progressTracker';
+import { ProgressTracker, type ReadingProgress } from '../utils/progressTracker';
 
 interface ReadingProgressProps {
   onStorySelect: (story: Story) => void;
